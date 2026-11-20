@@ -6,3 +6,9 @@ test/
 *.wav
 *.ts
 !docs/*.mp4
+
+# Local runtime tools and generated discovery/preview assets
+.tools/
+.candidate-check/
+trends*.md
+streams.md
