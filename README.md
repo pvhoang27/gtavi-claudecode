@@ -8,7 +8,7 @@
 
 <p align="center">GTA 6 is about to break the internet. Claude Code watches the biggest streams, catches the second chat explodes and hands you a ready-to-post vertical clip. Campaigns pay per 1,000 views. You just hit post.</p>
 
-<p align="center"><img src="https://img.shields.io/badge/Claude_Code-plugin-e8457f" alt="Claude Code: plugin"> <img src="https://img.shields.io/badge/skills-16-e8457f" alt="skills: 16"> <img src="https://img.shields.io/badge/clips-1080x1920-e8457f" alt="clips: 1080x1920"> <img src="https://img.shields.io/badge/languages-5-e8457f" alt="languages: 5"></p>
+<p align="center"><img src="https://img.shields.io/badge/Claude_Code-plugin-e8457f" alt="Claude Code: plugin"> <img src="https://img.shields.io/badge/skills-17-e8457f" alt="skills: 17"> <img src="https://img.shields.io/badge/clips-1080x1920-e8457f" alt="clips: 1080x1920"> <img src="https://img.shields.io/badge/languages-5-e8457f" alt="languages: 5"></p>
 <p align="center"><img src="https://img.shields.io/badge/GTA_6-Nov_19-e8457f" alt="GTA 6: Nov 19"> <img src="https://img.shields.io/badge/license-MIT-e8457f" alt="license: MIT"></p>
 <p align="center"><sub>Unofficial fan project. Not affiliated with Rockstar Games, Take-Two or Anthropic.</sub></p>
 <p align="center"><a href="#first-run-paste-this-into-claude-code">Quick start</a> · <a href="#two-ways-to-make-money">Make money</a> · <a href="#whats-inside">Skills</a> · <a href="#the-rules-that-make-clips-win">Clip rules</a> · <a href="#run-the-scripts-yourself">Scripts</a></p>
@@ -55,6 +55,7 @@ No income is promised. Your result depends on speed, picks and hooks, and the sc
 |---|---|
 | `setup` | Installs ffmpeg, yt-dlp and faster-whisper, asks 4 questions, builds your page folder |
 | `campaign-finder` | Live campaigns: rate per 1K views, budget left, rules, link |
+| `source-finder` | Creative Commons GTA 6 gameplay in English, scanned for watermarks (logos, burned-in text, facecams), with a contact sheet per video |
 | `trend-radar` | GTA 6 videos from the last 24 h ranked by views per hour |
 | `stream-finder` | Who is streaming GTA 6 right now, ranked by viewers |
 | `moment-finder` | Best 15 to 40 s moments, scored by loudness spikes, hype words, YouTube "most replayed" and chat spikes |
@@ -80,10 +81,11 @@ No leaks, no "play early" or "free download" posts, no piracy, no GTA Online mon
 
 ```
 pip install -r requirements.txt
+python scripts/sources.py --top 10   # reusable (CC BY), English, no watermark
 python scripts/trends.py --query "gta 6" --hours 24
 python scripts/streams.py --query "gta 6"
 python scripts/moments.py "https://www.youtube.com/watch?v=..." --top 8
-python scripts/cut.py jobs/<id> --pick 2 --layout facecam --hook "Nobody noticed this"
+python scripts/cut.py jobs/<id> --pick 2 --layout facecam --hook "Nobody noticed this"   # also copied to ~/Downloads/gtavi-clips/<date>/
 python scripts/check.py jobs/<id>/edits/clip_2.mp4 --campaign campaigns.md
 python scripts/live.py "https://www.youtube.com/watch?v=<live>" --minutes 60
 ```

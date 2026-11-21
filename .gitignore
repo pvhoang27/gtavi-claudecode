@@ -12,3 +12,5 @@ test/
 .candidate-check/
 trends*.md
 streams.md
+sources.md
+sources.json

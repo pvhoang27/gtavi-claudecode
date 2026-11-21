@@ -5,7 +5,7 @@ description: Write on-screen hooks for GTA 6 clips. Use whenever a clip needs a 
 
 # Hook writer
 
-Write 3 options per clip. Sentence case. Short: 3 to 9 words fit the hook box.
+Write 3 options per clip, in English (the page targets a global audience). Sentence case. Short: 3 to 9 words fit the hook box.
 
 ## What works
 

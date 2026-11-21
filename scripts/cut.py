@@ -9,7 +9,7 @@ usage: python cut.py jobs/<id> --pick 1 [--layout fill|blur|facecam|react] [--ho
 import argparse, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
-from common import load_json, run, save_json, tool
+from common import EXPORT_DIR, load_json, run, save_json, tool
 
 W, H = 1080, 1920
 
@@ -208,6 +208,8 @@ def main():
     ap.add_argument("--allow-profanity", action="store_true", help="keep swear words in captions (slurs are always masked)")
     ap.add_argument("--cam", default="auto", help="auto (find the webcam) or x:y:w:h fractions")
     ap.add_argument("--start", type=float); ap.add_argument("--end", type=float)
+    ap.add_argument("--caption", default="", help="post caption (English); the credit line is added automatically")
+    ap.add_argument("--no-export", action="store_true", help=f"do not copy the finished clip to {EXPORT_DIR}")
     a = ap.parse_args()
     d = Path(a.job); c = load_json(d / "candidates.json")
     pick = next(x for x in c["candidates"] if x["n"] == a.pick)
@@ -282,6 +284,27 @@ def main():
                                             "source_url": info.get("webpage_url"), "source_title": info.get("title"),
                                             "source_channel": info.get("channel") or info.get("uploader")})
     print(mp4)
+    if not a.no_export:
+        print(export(mp4, d, info, a))
+
+
+def export(mp4, d, info, a):
+    """Copy the clip to EXPORT_DIR/<date>/ with a ready-to-paste post text (caption + required credit)."""
+    import re, shutil, time
+    day = EXPORT_DIR / time.strftime("%Y-%m-%d"); day.mkdir(parents=True, exist_ok=True)
+    slug = re.sub(r"[^a-z0-9]+", "-", (a.hook or a.title or d.name).lower()).strip("-")[:50] or "clip"
+    dst = day / f"{slug}.mp4"
+    shutil.copy2(mp4, dst)
+    lic = info.get("license") or ""
+    credit = f"🎮 Gameplay: {info.get('channel') or info.get('uploader') or 'original creator'}"
+    if (info.get("webpage_url") or "").startswith("http"):
+        credit += f" ({info['webpage_url']})"
+    if "creative commons" in lic.lower():
+        credit += " | CC BY, edited (cut, vertical crop, captions)"
+    tags = "#GTA6 #GTAVI #ViceCity #Gaming #Shorts"
+    body = [a.caption or a.hook or a.title, "", credit, "", tags]
+    dst.with_suffix(".txt").write_text("\n".join(body) + "\n", encoding="utf-8")
+    return dst
 
 
 if __name__ == "__main__":

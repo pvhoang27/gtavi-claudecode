@@ -10,7 +10,7 @@ import argparse, json, math, re, sys, wave
 from pathlib import Path
 import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
-from common import ffprobe, is_url, job_dir, load_json, run, save_json, tool, ytdlp_base, ytdlp_json
+from common import LANG, ffprobe, is_url, job_dir, load_json, run, save_json, tool, ytdlp_base, ytdlp_json
 
 HYPE = re.compile(r"\b(no way|oh my god|omg|what|wait|bro|let'?s go|holy|insane|crazy|yo+|wtf|dude|look at|nah|run|go go)\b", re.I)
 CHAT_HYPE = re.compile(r"(LMAO|LOL|KEKW|OMEGALUL|W+\b|CLIP|💀|😂|🔥|NO WAY|HOLY)", re.I)
@@ -21,7 +21,8 @@ def fetch(src, d, max_min):
     if is_url(src):
         info = ytdlp_json(src)
         save_json(d / "info.json", {k: info.get(k) for k in ("id", "title", "uploader", "channel", "uploader_id", "webpage_url",
-                                                             "duration", "view_count", "upload_date", "heatmap", "is_live", "was_live")})
+                                                             "duration", "view_count", "upload_date", "heatmap", "is_live", "was_live",
+                                                             "license", "language")})
         vid = d / "source.mp4"
         if not vid.exists():
             args = ytdlp_base() + ["-f", "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080]/b", "--merge-output-format", "mp4",
@@ -63,7 +64,7 @@ def transcribe(wav, d):
 
     def run_on(device):
         model = WhisperModel("small", device=device, compute_type="float16" if device == "cuda" else "int8")
-        segs, _ = model.transcribe(pcm, word_timestamps=True, vad_filter=True)
+        segs, _ = model.transcribe(pcm, language=LANG or None, word_timestamps=True, vad_filter=True)
         return [{"w": w.word.strip(), "s": round(w.start, 2), "e": round(w.end, 2)} for s in segs for w in (s.words or [])]
     try:
         words = run_on("cuda" if cuda else "cpu")

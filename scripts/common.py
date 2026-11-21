@@ -4,10 +4,23 @@ from pathlib import Path
 
 ROOT = Path(os.environ.get("CLIP_DESK_HOME", Path.cwd()))
 JOBS = ROOT / "jobs"
+REPO = Path(__file__).resolve().parent.parent
+# Finished clips are copied here (mp4 + post caption with credit). Override with GTAVI_EXPORT_DIR.
+EXPORT_DIR = Path(os.environ.get("GTAVI_EXPORT_DIR", Path.home() / "Downloads" / "gtavi-clips"))
+# Language of sources, transcripts, hooks and captions. The page targets a global, English-speaking audience.
+LANG = os.environ.get("GTAVI_LANG", "en")
+LOCAL_BIN = [REPO / ".tools" / "ffmpeg-portable" / "bin", REPO / ".tools" / "bin"]
 
 
 def tool(name):
     p = shutil.which(name)
+    if not p:  # portable builds unpacked by the setup skill (no root needed)
+        for b in LOCAL_BIN:
+            for cand in (b / name, b / f"{name}.exe"):
+                if cand.exists():
+                    p = str(cand); break
+            if p:
+                break
     if not p:
         sys.exit(f"{name} not found. Run the setup skill first (it installs ffmpeg and yt-dlp).")
     return p
@@ -26,6 +39,8 @@ def ytdlp_base():
     import importlib.util
     exe = [sys.executable, "-m", "yt_dlp"] if importlib.util.find_spec("yt_dlp") else [tool("yt-dlp")]
     base = exe + ["--no-warnings", "--no-progress"]
+    if not shutil.which("ffmpeg"):  # yt-dlp needs ffmpeg to merge video + audio
+        base += ["--ffmpeg-location", str(Path(tool("ffmpeg")).parent)]
     if sys.platform == "win32":
         base += ["--compat-options", "no-certifi"]  # use the Windows certificate store
     return base
