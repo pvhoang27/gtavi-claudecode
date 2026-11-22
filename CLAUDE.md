@@ -23,4 +23,6 @@ Run everything with the project venv: `.venv/bin/python scripts/<name>.py`. ffmp
 5. `scripts/check.py jobs/<id>/edits/clip_<n>.mp4` and look at a few frames of the result.
 6. Report the files in `~/Downloads/gtavi-clips/<date>/`.
 
-If YouTube answers "Sign in to confirm you're not a bot", wait 10 to 30 minutes and retry.
+If YouTube answers "Sign in to confirm you're not a bot", rerun with the browser's YouTube cookies:
+`GTAVI_COOKIES=firefox:~/snap/firefox/common/.mozilla/firefox` (snap Firefox on this machine; `chrome` needs
+`secretstorage`). Without cookies, wait 10 to 30 minutes and retry. Do not run `sources.py` many times in a row.

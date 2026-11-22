@@ -43,6 +43,10 @@ def ytdlp_base():
         base += ["--ffmpeg-location", str(Path(tool("ffmpeg")).parent)]
     if sys.platform == "win32":
         base += ["--compat-options", "no-certifi"]  # use the Windows certificate store
+    if not shutil.which("deno") and shutil.which("node"):  # YouTube needs a JS runtime; yt-dlp only tries deno by default
+        base += ["--js-runtimes", "node"]
+    if os.environ.get("GTAVI_COOKIES"):  # e.g. "firefox" or "chrome": beats "Sign in to confirm you're not a bot"
+        base += ["--cookies-from-browser", os.environ["GTAVI_COOKIES"]]
     return base
 
 
