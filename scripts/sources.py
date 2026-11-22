@@ -124,6 +124,9 @@ def main():
     print(f"{len(ids)} Creative Commons search hits, checking each...")
     with ThreadPoolExecutor(3) as ex:
         infos = [i for i in ex.map(detail, ids) if i]
+    if ids and not infos:  # every lookup failed: YouTube is rate-limiting, keep the last good sources.md
+        sys.exit("YouTube refused every video lookup (\"Sign in to confirm you're not a bot\"). "
+                 "Wait 10 to 30 minutes and retry; sources.md was left as it was.")
     now, rows = time.time(), []
     for i in infos:
         lic = i.get("license") or ""

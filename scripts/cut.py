@@ -289,12 +289,20 @@ def main():
 
 
 def export(mp4, d, info, a):
-    """Copy the clip to EXPORT_DIR/<date>/ with a ready-to-paste post text (caption + required credit)."""
-    import re, shutil, time
+    """Copy the clip into its own folder EXPORT_DIR/<date>/<NN>-<hook-slug>/:
+    the video, post.txt (caption + required credit + hashtags), cover.jpg and source.json."""
+    import json, re, shutil, time
     day = EXPORT_DIR / time.strftime("%Y-%m-%d"); day.mkdir(parents=True, exist_ok=True)
     slug = re.sub(r"[^a-z0-9]+", "-", (a.hook or a.title or d.name).lower()).strip("-")[:50] or "clip"
-    dst = day / f"{slug}.mp4"
+    folder = next((f for f in day.iterdir() if f.is_dir() and f.name.split("-", 1)[-1] == slug), None)
+    if folder is None:  # numbered so the folders sort in the order the clips were made
+        nums = [int(f.name.split("-", 1)[0]) for f in day.iterdir() if f.is_dir() and f.name.split("-", 1)[0].isdigit()]
+        folder = day / f"{max(nums, default=0) + 1:02d}-{slug}"
+    folder.mkdir(exist_ok=True)
+    dst = folder / f"{slug}.mp4"
     shutil.copy2(mp4, dst)
+    run([tool("ffmpeg"), "-y", "-v", "error", "-ss", "1", "-i", str(dst), "-frames:v", "1", "-q:v", "3",
+         str(folder / "cover.jpg")], check=False)
     lic = info.get("license") or ""
     credit = f"🎮 Gameplay: {info.get('channel') or info.get('uploader') or 'original creator'}"
     if (info.get("webpage_url") or "").startswith("http"):
@@ -303,9 +311,13 @@ def export(mp4, d, info, a):
         credit += " | CC BY, edited (cut, vertical crop, captions)"
     tags = "#GTA6 #GTAVI #ViceCity #Gaming #Shorts"
     body = [a.caption or a.hook or a.title, "", credit, "", tags]
-    dst.with_suffix(".txt").write_text("\n".join(body) + "\n", encoding="utf-8")
-    return dst
-
+    (folder / "post.txt").write_text("\n".join(body) + "\n", encoding="utf-8")
+    (folder / "source.json").write_text(json.dumps({
+        "hook": a.hook or a.title, "job": str(d), "pick": a.pick, "layout": a.layout,
+        "source_url": info.get("webpage_url"), "source_title": info.get("title"),
+        "source_channel": info.get("channel") or info.get("uploader"), "license": lic,
+    }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return folder
 
 if __name__ == "__main__":
     main()

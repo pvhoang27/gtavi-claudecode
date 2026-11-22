@@ -9,8 +9,8 @@ Run everything with the project venv: `.venv/bin/python scripts/<name>.py`. ffmp
 - **Only reusable, watermark-free sources.** Default to YouTube videos licensed Creative Commons Attribution, found and
   scanned with `scripts/sources.py` (skill `source-finder`). Check the contact sheets by eye before cutting.
   Do not clip streamers or standard-license videos unless the user names them or a campaign allows it.
-- **Output folder.** Every finished clip is copied by `cut.py` to `~/Downloads/gtavi-clips/<YYYY-MM-DD>/<hook-slug>.mp4`
-  with a `.txt` next to it: caption, credit line (required by CC BY) and hashtags. Override with `GTAVI_EXPORT_DIR`.
+- **Output folder.** Every finished clip is copied by `cut.py` to `~/Downloads/gtavi-clips/<YYYY-MM-DD>/<NN>-<hook-slug>/` (one folder per clip)
+  holding the `.mp4`, `post.txt` (caption, credit line required by CC BY, hashtags), `cover.jpg` and `source.json`. Override with `GTAVI_EXPORT_DIR`.
 - **Commit and push** code improvements to `origin main` (this fork) after a run, without asking.
 - Nothing is ever uploaded to social platforms automatically.
 

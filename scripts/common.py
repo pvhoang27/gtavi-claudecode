@@ -70,7 +70,16 @@ def ffprobe(path):
 
 
 def save_json(path, obj):
-    Path(path).write_text(json.dumps(obj, ensure_ascii=False, indent=1), encoding="utf-8")
+    Path(path).write_text(json.dumps(obj, ensure_ascii=False, indent=1, default=_plain), encoding="utf-8")
+
+
+def _plain(o):
+    """numpy scalars (bool_, float32, int64...) and arrays -> plain Python for JSON."""
+    if hasattr(o, "item") and getattr(o, "ndim", 0) == 0:
+        return o.item()
+    if hasattr(o, "tolist"):
+        return o.tolist()
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
 
 
 def load_json(path):

@@ -85,7 +85,7 @@ python scripts/sources.py --top 10   # reusable (CC BY), English, no watermark
 python scripts/trends.py --query "gta 6" --hours 24
 python scripts/streams.py --query "gta 6"
 python scripts/moments.py "https://www.youtube.com/watch?v=..." --top 8
-python scripts/cut.py jobs/<id> --pick 2 --layout facecam --hook "Nobody noticed this"   # also copied to ~/Downloads/gtavi-clips/<date>/
+python scripts/cut.py jobs/<id> --pick 2 --layout facecam --hook "Nobody noticed this"   # also copied to ~/Downloads/gtavi-clips/<date>/<NN>-<hook>/
 python scripts/check.py jobs/<id>/edits/clip_2.mp4 --campaign campaigns.md
 python scripts/live.py "https://www.youtube.com/watch?v=<live>" --minutes 60
 ```
